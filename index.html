@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRAKARSA — PHE WMO Risk Assessment Knowledge Assistant</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600;1,700;1,800&display=swap" rel="stylesheet" />
+
+  <!-- Pemanggilan File CSS Modular -->
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/risk-assessment.css" />
+  <link rel="stylesheet" href="css/status.css" />
+</head>
+<body>
+
+  <!-- =========================================================
+       0. GERBANG LOGIN AKSES SISTEM PRAKARSA (KHUSUS AKUN TERDAFTAR)
+       ========================================================= -->
+  <div class="login-overlay-gate" id="loginOverlayGate">
+    <div class="login-card">
+      <div class="login-brand-row">
+        <img
+          src="logo-phe wmo.png"
+          alt="Pertamina PHE WMO"
+          class="login-logo-ptm"
+          onerror="this.src='logo-phe.png'"
+        />
+        <div class="login-brand-divider"></div>
+        <img
+          src="logo-prakarsa.jpg"
+          alt="PRAKARSA"
+          class="login-logo-prakarsa"
+        />
+      </div>
+
+      <div class="login-header-text">
+        <h1>Masuk ke Sistem PRAKARSA</h1>
+        <p>PHE WMO Risk Assessment Knowledge Assistant for Review &amp; Safety Authorization</p>
+      </div>
+
+      <form id="prakarsaLoginForm" class="login-form" autocomplete="off">
+        <div class="login-error-alert" id="loginErrorAlert">
+          Username atau Password yang Anda masukkan salah. Pastikan akun Anda terdaftar.
+        </div>
+
+        <div class="login-field-group">
+          <label for="loginUsername">Username</label>
+          <div class="login-input-wrap">
+            <input
+              type="text"
+              id="loginUsername"
+              placeholder="Masukkan username (huruf kecil)"
+              required
+              autocomplete="username"
+            />
+          </div>
+        </div>
+
+        <div class="login-field-group">
+          <label for="loginPassword">Password</label>
+          <div class="login-input-wrap">
+            <input
+              type="password"
+              id="loginPassword"
+              placeholder="Masukkan password akun Anda"
+              required
+              autocomplete="current-password"
+            />
+            <button type="button" class="btn-toggle-pwd" id="btnTogglePwd">Lihat</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-login-submit">
+          Masuk ke Sistem
+        </button>
+      </form>
+
+      <div class="login-footer-note">
+        Akses terbatas khusus personel terdaftar Pertamina Hulu Energi WMO (KP / PA / Reviewer).
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       1. HEADER UTAMA (MENGGUNAKAN GAMBAR LOGO ASLI ANDA)
+       ========================================================= -->
+  <header class="app-header">
+    <div class="header-left">
+      <a href="#beranda" class="brand-pertamina" id="brandLogoLink" title="Kembali ke Beranda">
+        <img
+          src="logo-phe-wmo.png"
+          alt="Pertamina PHE WMO"
+          class="header-logo-img ptm-real-logo"
+          onerror="if(!this.dataset.triedAssets){this.dataset.triedAssets='1';this.src='assets/logo-phe-wmo.png';}else{this.style.display='none';document.getElementById('fallbackPtmLogo').style.display='flex';}"
+        />
+        <div id="fallbackPtmLogo" class="fallback-logo-wrap" style="display:none;">
+          <div class="pertamina-text">
+            <span class="ptm-title">PERTAMINA</span>
+            <span class="ptm-sub">PHE WMO</span>
+          </div>
+        </div>
+      </a>
+
+      <div class="header-divider"></div>
+
+      <div class="brand-prakarsa">
+        <img
+          src="logo-prakarsa.jpg"
+          alt="PRAKARSA"
+          class="header-logo-img prakarsa-real-logo"
+          onerror="if(!this.dataset.triedAssets){this.dataset.triedAssets='1';this.src='assets/logo-prakarsa.jpg';}else{this.style.display='none';document.getElementById('fallbackPrakarsaLogo').style.display='inline-block';}"
+        />
+        <span id="fallbackPrakarsaLogo" class="prakarsa-logo-text" style="display:none;">PRAKARSA</span>
+      </div>
+    </div>
+
+    <!-- Profil Pengguna Dinamis di Sebelah Kanan -->
+    <div class="header-right">
+      <div class="user-profile-trigger" id="userProfileTrigger" title="Klik untuk mengganti simulasi peran pengguna">
+        <div class="user-info">
+          <span class="user-name" id="headerUserName">HAFIZAL</span>
+          <span class="user-role" id="headerUserRole">KP.</span>
+        </div>
+        <div class="user-avatar">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+            <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v2h20v-2c0-3.33-6.67-5-10-5z"/>
+          </svg>
+        </div>
+        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.3">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="dropdown-header">Akun Personel Aktif (KP)</div>
+        <button type="button" class="role-option active" data-name="HAFIZAL" data-role="KP." data-fullrole="Kerja Praktik (KP)">
+          <strong>HAFIZAL (KP.)</strong>
+          <span>Jabatan: KP — Penyusun Risk Assessment</span>
+        </button>
+        <button type="button" class="role-option" data-name="NURLAILI" data-role="KP." data-fullrole="Kerja Praktik (KP)">
+          <strong>NURLAILI (KP.)</strong>
+          <span>Jabatan: KP — Penyusun Risk Assessment</span>
+        </button>
+        <button type="button" class="role-option" data-name="NAMIRA" data-role="KP." data-fullrole="Kerja Praktik (KP)">
+          <strong>NAMIRA (KP.)</strong>
+          <span>Jabatan: KP — Penyusun Risk Assessment</span>
+        </button>
+        <div class="dropdown-logout-wrap">
+          <button type="button" class="btn-logout-account" id="btnLogoutAccount">
+            Keluar / Ganti Akun (Logout)
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       2. LAYOUT UTAMA (SIDEBAR KIRI + KONTEN KANAN)
+       ========================================================= -->
+  <div class="app-body">
+
+    <aside class="app-sidebar">
+      <nav class="sidebar-nav">
+        <button type="button" class="nav-item active" data-page="beranda" id="navBeranda">
+          <span class="nav-item-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 3L3 10.5h2.5V20h5v-5.5h3V20h5v-9.5H21L12 3z"/>
+            </svg>
+            <span class="nav-label">Beranda</span>
+          </span>
+          <svg class="nav-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <polyline points="9 6 15 12 9 18"></polyline>
+          </svg>
+        </button>
+
+        <button type="button" class="nav-item" data-page="ra" id="navRA">
+          <span class="nav-item-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L4 5.5v6.1c0 5.1 3.4 9.8 8 11.4 4.6-1.6 8-6.3 8-11.4V5.5L12 2zm0 3.1l5.5 2.4v4.2c0 3.7-2.3 7.2-5.5 8.6V5.1z"/>
+            </svg>
+            <span class="nav-label">RA</span>
+          </span>
+          <svg class="nav-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <polyline points="9 6 15 12 9 18"></polyline>
+          </svg>
+        </button>
+
+        <button type="button" class="nav-item" data-page="status" id="navStatus">
+          <span class="nav-item-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="13" width="4" height="7" rx="1"></rect>
+              <rect x="10" y="9" width="4" height="11" rx="1"></rect>
+              <rect x="17" y="4" width="4" height="16" rx="1"></rect>
+            </svg>
+            <span class="nav-label">Status</span>
+          </span>
+          <svg class="nav-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <polyline points="9 6 15 12 9 18"></polyline>
+          </svg>
+        </button>
+      </nav>
+    </aside>
+
+    <main class="app-main">
+
+      <!-- =====================================================
+           HALAMAN 1: BERANDA
+           ===================================================== -->
+      <section class="page-section active" id="page-beranda">
+        <h1 class="page-title">Beranda</h1>
+
+        <div class="hero-banner-card">
+          <div class="hero-shield-icon">
+            <svg viewBox="0 0 64 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M32 4L8 14.5V33.5C8 49.8 18.2 64.2 32 69C45.8 64.2 56 49.8 56 33.5V14.5L32 4Z" stroke="white" stroke-width="4.5" stroke-linejoin="round"/>
+              <path d="M22 36.5L28.8 43.3L43 29" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="hero-vertical-line"></div>
+          <div class="hero-text-content">
+            <h2>Selamat datang di PRAKARSA</h2>
+            <p class="hero-subtitle">“PHE WMO Risk Assessment Knowledge Assistant for Review &amp; Safety Authorization”</p>
+            <p class="hero-desc">Sistem pembantu pembuatan dokumen Risk Assessment yang informatif dan edukatif</p>
+          </div>
+        </div>
+
+        <div class="action-cta-card" id="btnStartRA" role="button" tabindex="0">
+          <div class="cta-left-group">
+            <div class="cta-doc-icon">
+              <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="8" y="6" width="30" height="38" rx="4" stroke="#E31E24" stroke-width="3.2"/>
+                <line x1="15" y1="16" x2="31" y2="16" stroke="#E31E24" stroke-width="3" stroke-linecap="round"/>
+                <line x1="15" y1="24" x2="31" y2="24" stroke="#E31E24" stroke-width="3" stroke-linecap="round"/>
+                <line x1="15" y1="32" x2="24" y2="32" stroke="#E31E24" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="39" cy="39" r="11" fill="#E31E24"/>
+                <path d="M39 34V44M34 39H44" stroke="white" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="cta-vertical-line"></div>
+            <div class="cta-text-content">
+              <h3>Buat Risk Assessment</h3>
+              <p>Isi informasi pekerjaan, identifikasi bahaya, dan tentukan tingkat risiko dengan mudah.</p>
+            </div>
+          </div>
+
+          <div class="cta-arrow-circle">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           HALAMAN 2: MODUL FORMULIR RISK ASSESSMENT (TAHAP 1 & TAHAP 2)
+           ===================================================== -->
+      <section class="page-section" id="page-ra">
+        <div class="ra-header-bar">
+          <h1 class="page-title">Risk Assessment</h1>
+          <!-- Navigasi Stepper Antar Tahap (Dapat Diklik) -->
+          <div class="ra-step-indicator">
+            <button type="button" class="step-pill active" id="stepPill1" data-step="1">1. Informasi Pekerjaan</button>
+            <span class="step-sep">→</span>
+            <button type="button" class="step-pill" id="stepPill2" data-step="2">2. Identifikasi Bahaya &amp; Risiko</button>
+            <span class="step-sep">→</span>
+            <button type="button" class="step-pill" id="stepPill3" data-step="3">3. Task Hazard Assessment (THA)</button>
+          </div>
+        </div>
+
+        <form id="raForm" novalidate>
+
+          <!-- =================================================
+               TAHAP 1: INFORMASI PEKERJAAN (HALAMAN 1 FORM RA)
+               ================================================= -->
+          <div id="raStep1View" class="ra-step-view active">
+
+            <!-- PANEL 1: INFORMASI PEKERJAAN -->
+            <div class="form-card">
+              <div class="section-heading-row">
+                <h2 class="section-heading">Informasi Pekerjaan</h2>
+                <button type="button" class="btn-edu-toggle" id="btnToggleEdu">
+                  <span>Panduan K3 Kategori Pekerjaan</span>
+                </button>
+              </div>
+
+              <div class="form-subsection">
+                <label class="subsection-title">Apa tipe pekerjaan anda?</label>
+                <p class="subsection-hint">Pilih salah satu</p>
+
+                <div class="work-type-grid" id="workTypeGrid"></div>
+                <div class="k3-edu-banner" id="k3EduBanner"></div>
+              </div>
+
+              <div class="form-subsection">
+                <label class="subsection-title">Site lokasi pekerjaan?</label>
+                <div class="option-grid-2col" id="siteLocationGrid"></div>
+              </div>
+
+              <div class="form-subsection">
+                <label class="subsection-title">Area Pekerjaan?</label>
+                <div id="workAreaWrapper"></div>
+              </div>
+
+              <div class="form-subsection">
+                <label class="subsection-title" for="specificLocation">Lokasi spesifik</label>
+                <div class="input-with-icon bg-tinted">
+                  <span class="input-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 21s-7-5.4-7-11a7 7 0 1 1 14 0c0 5.6-7 11-7 11z"></path>
+                      <circle cx="12" cy="10" r="2.5"></circle>
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    id="specificLocation"
+                    name="specificLocation"
+                    placeholder="Tuliskan lokasi secara spesifik namun padat dan jelas, contoh: AREA PROCESS UNIT"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 2: NOMOR DAN REGISTRASI -->
+            <div class="form-card">
+              <h2 class="section-heading">Nomor dan Registrasi</h2>
+              <div class="registration-grid-2col">
+                <div class="field-group">
+                  <label class="field-label" for="raNumber">RA No. (Nomor RA)</label>
+                  <div class="input-with-icon">
+                    <span class="input-icon">
+                      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="8" y1="13" x2="16" y2="13"></line>
+                        <line x1="8" y1="17" x2="13" y2="17"></line>
+                      </svg>
+                    </span>
+                    <input type="text" id="raNumber" name="raNumber" placeholder="Masukkan Nomor RA" />
+                  </div>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label" for="regDate">Tanggal Registrasi / Pelaksanaan Pekerjaan</label>
+                  <div class="input-with-icon date-input-wrap">
+                    <span class="input-icon">
+                      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                    </span>
+                    <input type="date" id="regDate" name="regDate" />
+                  </div>
+                  <div class="ra-validity-badge" id="raValidityInfo">
+                    Masa berlaku dokumen RA adalah <strong>7 hari</strong> sejak tanggal registrasi dipilih.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 3: DESKRIPSI PEKERJAAN -->
+            <div class="form-card">
+              <h2 class="section-heading">Deskripsi Pekerjaan (termasuk peralatan kerja)</h2>
+              <p class="section-guide-text">
+                Panduan Pengisian: Tuliskan deskripsi aktivitas pekerjaan yang akan dilakukan beserta peralatan kerja yang digunakan secara <strong>jelas, padat, dan spesifik</strong>.
+              </p>
+              <div class="input-with-icon textarea-with-icon">
+                <span class="input-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="8" y1="13" x2="16" y2="13"></line>
+                    <line x1="8" y1="17" x2="14" y2="17"></line>
+                  </svg>
+                </span>
+                <textarea
+                  id="jobDescription"
+                  name="jobDescription"
+                  rows="3"
+                  placeholder="Tuliskan deskripsi pekerjaan Anda dengan jelas, padat, dan spesifik. Contoh: Memperbaiki komponen di TGRI menggunakan hand tools dan power tools."
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- PANEL 4: TIM KAJI RISIKO -->
+            <div class="form-card">
+              <div class="section-heading-row">
+                <h2 class="section-heading">Tim Kaji Risiko</h2>
+                <button type="button" class="btn-add-member" id="btnAddTeamMember">+ Tambah Anggota Tim</button>
+              </div>
+
+              <div class="signature-policy-note">
+                <strong>Panduan Tanda Tangan:</strong> Pengunggahan <em>soft file</em> tanda tangan digital bersifat <strong>opsional</strong> (digunakan apabila otorisasi dilakukan secara jarak jauh). Jika kondisi memungkinkan, gunakan <strong>tanda tangan asli (basah)</strong> pada dokumen cetak.
+              </div>
+
+              <div id="teamMembersContainer">
+                <div class="person-grid-3col team-member-row">
+                  <div class="field-group">
+                    <label class="field-label">Nama Tim</label>
+                    <div class="input-with-icon">
+                      <span class="input-icon">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <line x1="8" y1="13" x2="16" y2="13"></line>
+                          <line x1="8" y1="17" x2="13" y2="17"></line>
+                        </svg>
+                      </span>
+                      <input type="text" name="teamName[]" placeholder="Masukkan nama anggota tim kaji risiko" />
+                    </div>
+                  </div>
+
+                  <div class="field-group">
+                    <label class="field-label">Jabatan</label>
+                    <div class="input-with-icon select-with-icon">
+                      <span class="input-icon">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                          <line x1="7" y1="9" x2="17" y2="9"></line>
+                          <line x1="7" y1="14" x2="13" y2="14"></line>
+                        </svg>
+                      </span>
+                      <select name="teamRole[]" class="role-select-dropdown">
+                        <option value="" disabled selected>Pilih jabatan tim kaji risiko</option>
+                        <option value="Risk Assessment Facilitator">Risk Assessment Facilitator</option>
+                        <option value="AA">AA (Area Authority)</option>
+                        <option value="PA">PA (Performing Authority)</option>
+                        <option value="Member">Member</option>
+                        <option value="SC">SC (Site Controller)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="field-group">
+                    <label class="field-label">Tanda Tangan <span class="optional-tag">(Opsional)</span></label>
+                    <label class="input-with-icon file-signature-box">
+                      <span class="input-icon">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                        </svg>
+                      </span>
+                      <span class="signature-placeholder">Unggah soft file tanda tangan (opsional)</span>
+                      <input type="file" name="teamSign[]" accept="image/*,.pdf" class="hidden-file-input" />
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 5: RA REVIEWER -->
+            <div class="form-card">
+              <h2 class="section-heading">RA Reviewer</h2>
+              <div class="reviewer-guide-banner">
+                <strong>Panduan Pemilihan RA Reviewer:</strong>
+                Jabatan RA Reviewer di bawah ini bersifat tetap berdasarkan tingkatan wewenang risiko. Anda <strong>cukup mengisi salah satu baris RA Reviewer</strong> yang sesuai dengan <strong>hasil tingkat risiko akhir (Residual Risk)</strong> pekerjaan.
+              </div>
+
+              <div class="reviewer-rows-wrapper">
+                <!-- BARIS 1: SITE / ASSET CONTROLLER (HIJAU) -->
+                <div class="person-grid-3col reviewer-row">
+                  <div class="field-group">
+                    <label class="field-label">Nama RA Reviewer</label>
+                    <div class="input-with-icon">
+                      <span class="input-icon">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <line x1="8" y1="13" x2="16" y2="13"></line>
+                          <line x1="8" y1="17" x2="13" y2="17"></line>
+                        </svg>
+                      </span>
+                      <input type="text" name="reviewerName[]" data-role="Site Controller" placeholder="Masukkan nama Site/Asset Controller (jika dipilih)" />
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label">Jabatan (Tetap)</label>
+                    <div class="fixed-role-box reviewer-green">
+                      <span class="fixed-role-title">Asset / Site Controller</span>
+                      <span class="fixed-role-badge">Skor 1–4 (Rendah)</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label">Tanda Tangan <span class="optional-tag">(Opsional)</span></label>
+                    <label class="input-with-icon file-signature-box">
+                      <span class="input-icon">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                        </svg>
+                      </span>
+                      <span class="signature-placeholder">Unggah soft file tanda tangan (opsional)</span>
+                      <input type="file" name="reviewerSign[]" accept="image/*,.pdf" class="hidden-file-input" />
+                    </label>
+                  </div>
+                </div>
+
+                <!-- BARIS 2: MANAGER LINE (KUNING) -->
+                <div class="person-grid-3col reviewer-row">
+                  <div class="field-group">
+                    <label class="field-label">Nama RA Reviewer</label>
+                    <div class="input-with-icon">
+                      <span class="input-icon">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <line x1="8" y1="13" x2="16" y2="13"></line>
+                          <line x1="8" y1="17" x2="13" y2="17"></line>
+                        </svg>
+                      </span>
+                      <input type="text" name="reviewerName[]" data-role="Manager Line" placeholder="Masukkan nama Manager Line (jika dipilih)" />
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label">Jabatan (Tetap)</label>
+                    <div class="fixed-role-box reviewer-yellow">
+                      <span class="fixed-role-title">Manager Line</span>
+                      <span class="fixed-role-badge">Skor 5–9 (Moderate)</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label">Tanda Tangan <span class="optional-tag">(Opsional)</span></label>
+                    <label class="input-with-icon file-signature-box">
+                      <span class="input-icon">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                        </svg>
+                      </span>
+                      <span class="signature-placeholder">Unggah soft file tanda tangan (opsional)</span>
+                      <input type="file" name="reviewerSign[]" accept="image/*,.pdf" class="hidden-file-input" />
+                    </label>
+                  </div>
+                </div>
+
+                <!-- BARIS 3: FIELD MANAGER (ORANYE) -->
+                <div class="person-grid-3col reviewer-row">
+                  <div class="field-group">
+                    <label class="field-label">Nama RA Reviewer</label>
+                    <div class="input-with-icon">
+                      <span class="input-icon">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <line x1="8" y1="13" x2="16" y2="13"></line>
+                          <line x1="8" y1="17" x2="13" y2="17"></line>
+                        </svg>
+                      </span>
+                      <input type="text" name="reviewerName[]" data-role="Field Manager" placeholder="Masukkan nama Field Manager (jika dipilih)" />
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label">Jabatan (Tetap)</label>
+                    <div class="fixed-role-box reviewer-orange">
+                      <span class="fixed-role-title">Field Manager</span>
+                      <span class="fixed-role-badge">Skor 10–12 (Tinggi)</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label">Tanda Tangan <span class="optional-tag">(Opsional)</span></label>
+                    <label class="input-with-icon file-signature-box">
+                      <span class="input-icon">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                        </svg>
+                      </span>
+                      <span class="signature-placeholder">Unggah soft file tanda tangan (opsional)</span>
+                      <input type="file" name="reviewerSign[]" accept="image/*,.pdf" class="hidden-file-input" />
+                    </label>
+                  </div>
+                </div>
+
+                <!-- BARIS 4: GENERAL MANAGER (MERAH) -->
+                <div class="person-grid-3col reviewer-row">
+                  <div class="field-group">
+                    <label class="field-label">Nama RA Reviewer</label>
+                    <div class="input-with-icon">
+                      <span class="input-icon">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <line x1="8" y1="13" x2="16" y2="13"></line>
+                          <line x1="8" y1="17" x2="13" y2="17"></line>
+                        </svg>
+                      </span>
+                      <input type="text" name="reviewerName[]" data-role="General Manager" placeholder="Masukkan nama General Manager (jika dipilih)" />
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label">Jabatan (Tetap)</label>
+                    <div class="fixed-role-box reviewer-red">
+                      <span class="fixed-role-title">General Manager</span>
+                      <span class="fixed-role-badge">Skor 15–25 (High)</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label">Tanda Tangan <span class="optional-tag">(Opsional)</span></label>
+                    <label class="input-with-icon file-signature-box">
+                      <span class="input-icon">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                        </svg>
+                      </span>
+                      <span class="signature-placeholder">Unggah soft file tanda tangan (opsional)</span>
+                      <input type="file" name="reviewerSign[]" accept="image/*,.pdf" class="hidden-file-input" />
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TOMBOL AKSI BAWAH TAHAP 1 -->
+            <div class="form-footer-actions">
+              <button type="button" class="btn-secondary-draft" id="btnSaveDraft">
+                Simpan sebagai Draft
+              </button>
+              <button type="button" class="btn-primary-next" id="btnGoToStep2">
+                <span>Selanjutnya (Tahap 2: Identifikasi Bahaya)</span>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- =================================================
+               TAHAP 2: IDENTIFIKASI BAHAYA & MATRIKS RISIKO
+               (Transformasi Tabel Konvensional -> Kartu Edukatif)
+               ================================================= -->
+          <div id="raStep2View" class="ra-step-view">
+
+            <!-- Baris Atas Tahap 2: Tombol Buka Panduan Matriks Risiko Resmi -->
+            <div class="step2-top-banner">
+              <div class="step2-top-left">
+                <h3>Tahap 2 — Identifikasi Bahaya, Penilaian Risiko &amp; Pengendalian</h3>
+                <p>Uraikan setiap langkah pekerjaan, bahaya, dampak, nilai Risiko Awal, Tindakan Pengendalian (EL/SB/EC/AD/APD), dan nilai Risiko Sisa.</p>
+              </div>
+              <button type="button" class="btn-open-matrix-guide" id="btnToggleMatrixReference">
+                Buka Tabel Panduan Matriks Risiko (Severity &amp; Probability)
+              </button>
+            </div>
+
+            <!-- PANEL PANDUAN MATRIKS RISIKO (DAPAT DIBUKA/TUTUP KAPAN SAJA) -->
+            <div class="matrix-reference-drawer" id="matrixReferenceDrawer">
+              <div class="matrix-drawer-header">
+                <h4>PANDUAN MATRIKS RISIKO — PRAKARSA PHE WMO</h4>
+                <button type="button" class="btn-close-drawer" id="btnCloseMatrixReference">Tutup Panduan</button>
+              </div>
+
+              <!-- 1. Tabel Dampak Bahaya (Severity / Keparahan) -->
+              <div class="matrix-guide-section">
+                <h5>1. Dampak Bahaya (Severity / Keparahan)</h5>
+                <div class="table-responsive">
+                  <table class="guide-ref-table">
+                    <thead>
+                      <tr>
+                        <th style="width:130px;">Level</th>
+                        <th>Manusia</th>
+                        <th>Lingkungan</th>
+                        <th>Aset (Biaya)</th>
+                        <th>Reputasi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>5 – Sangat Besar</strong></td>
+                        <td>Multiple Fatality: Kejadian yang menyebabkan lebih dari satu orang meninggal dunia.</td>
+                        <td>Kerusakan lingkungan sangat berat di area sensitif atau tumpahan minyak &gt; 100 barel (±15.900 liter).</td>
+                        <td>Kerugian perusahaan &gt; US$5 juta (±Rp90,6 miliar).</td>
+                        <td>Reputasi perusahaan terdampak buruk secara nasional dan internasional.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>4 – Besar</strong></td>
+                        <td>Single Fatality / Cacat Permanen / LTI: Satu orang meninggal, cacat permanen, atau kehilangan waktu kerja.</td>
+                        <td>Kerusakan lingkungan di area sensitif atau tumpahan minyak 15–100 barel (±2.385–15.900 liter).</td>
+                        <td>Kerugian perusahaan US$1–5 juta (±Rp18,1–90,6 miliar).</td>
+                        <td>Reputasi perusahaan terdampak buruk di tingkat provinsi.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>3 – Sedang</strong></td>
+                        <td>Restricted Work Case (RWC): Pekerja tidak dapat melakukan sebagian tugas normalnya dan bekerja dengan pembatasan.</td>
+                        <td>Kerusakan lingkungan di area perusahaan atau tumpahan minyak 5–15 barel (±795–2.385 liter).</td>
+                        <td>Kerugian perusahaan US$100 ribu–1 juta (±Rp1,81–18,1 miliar).</td>
+                        <td>Reputasi perusahaan terdampak buruk di tingkat lokal (kota/kabupaten).</td>
+                      </tr>
+                      <tr>
+                        <td><strong>2 – Kecil</strong></td>
+                        <td>Medical Treatment Case (MTC): Cedera memerlukan penanganan medis lebih lanjut di klinik atau RS.</td>
+                        <td>Tumpahan minyak di area perusahaan 1–5 barel (±159–795 liter).</td>
+                        <td>Kerugian perusahaan US$10 ribu–100 ribu (±Rp181 juta–1,81 miliar).</td>
+                        <td>Reputasi perusahaan terdampak di lingkungan internal.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>1 – Sangat Kecil</strong></td>
+                        <td>First Aid Case (FAC): Cedera ringan cukup ditangani pertolongan pertama (P3K), tanpa rujukan medis.</td>
+                        <td>Tidak ada kerusakan lingkungan atau tumpahan minyak &lt; 1 barel (±159 liter).</td>
+                        <td>Kerugian perusahaan &lt; US$10 ribu (±Rp181 juta).</td>
+                        <td>Tidak menimbulkan dampak terhadap reputasi perusahaan.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- 2. Tabel Kemungkinan Kejadian (Probability) & 3. Matriks 5x5 -->
+              <div class="matrix-two-col-wrap">
+                <div class="matrix-guide-section">
+                  <h5>2. Kemungkinan Kejadian (Probability / Probabilitas)</h5>
+                  <table class="guide-ref-table">
+                    <thead>
+                      <tr>
+                        <th style="width:60px;">Nilai</th>
+                        <th style="width:180px;">Kategori</th>
+                        <th>Panduan Penilaian</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td style="text-align:center;"><strong>5</strong></td>
+                        <td><strong>Hampir Pasti Terjadi</strong></td>
+                        <td>Kejadian sangat sering terjadi atau diperkirakan berulang setidaknya setiap 6 bulan, dan terjadi 6 bulan terakhir di site.</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:center;"><strong>4</strong></td>
+                        <td><strong>Sangat Mungkin Terjadi</strong></td>
+                        <td>Kejadian pernah terjadi setidaknya satu kali dalam 1 tahun terakhir di site.</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:center;"><strong>3</strong></td>
+                        <td><strong>Bisa Terjadi</strong></td>
+                        <td>Kejadian pernah terjadi di site atau umum terjadi pada pekerjaan sejenis.</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:center;"><strong>2</strong></td>
+                        <td><strong>Jarang Terjadi</strong></td>
+                        <td>Kejadian jarang ditemukan, tetapi masih mungkin terjadi.</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:center;"><strong>1</strong></td>
+                        <td><strong>Hampir Tidak Mungkin Terjadi</strong></td>
+                        <td>Kejadian hampir tidak mungkin terjadi dengan kondisi dan pengendalian saat ini.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="matrix-guide-section">
+                  <h5>3. Tabel Matriks dan Nilai Risiko (Probability × Severity)</h5>
+                  <table class="visual-matrix-5x5">
+                    <thead>
+                      <tr>
+                        <th rowspan="2" class="matrix-corner">DAMPAK (Severity) ↓<br/>PROBABILITAS →</th>
+                        <th colspan="5">PROBABILITAS KEMUNGKINAN TERJADI</th>
+                      </tr>
+                      <tr>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                        <th>5</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="sev-label"><strong>5 – Sangat Besar</strong></td>
+                        <td class="m-cell m-yellow">5</td>
+                        <td class="m-cell m-orange">10</td>
+                        <td class="m-cell m-red">15</td>
+                        <td class="m-cell m-red">20</td>
+                        <td class="m-cell m-red">25</td>
+                      </tr>
+                      <tr>
+                        <td class="sev-label"><strong>4 – Besar</strong></td>
+                        <td class="m-cell m-green-light">4</td>
+                        <td class="m-cell m-yellow">8</td>
+                        <td class="m-cell m-orange">12</td>
+                        <td class="m-cell m-red">16</td>
+                        <td class="m-cell m-red">20</td>
+                      </tr>
+                      <tr>
+                        <td class="sev-label"><strong>3 – Sedang</strong></td>
+                        <td class="m-cell m-green-dark">3</td>
+                        <td class="m-cell m-yellow">6</td>
+                        <td class="m-cell m-yellow">9</td>
+                        <td class="m-cell m-orange">12</td>
+                        <td class="m-cell m-red">15</td>
+                      </tr>
+                      <tr>
+                        <td class="sev-label"><strong>2 – Kecil</strong></td>
+                        <td class="m-cell m-green-dark">2</td>
+                        <td class="m-cell m-green-light">4</td>
+                        <td class="m-cell m-yellow">6</td>
+                        <td class="m-cell m-yellow">8</td>
+                        <td class="m-cell m-orange">10</td>
+                      </tr>
+                      <tr>
+                        <td class="sev-label"><strong>1 – Sangat Kecil</strong></td>
+                        <td class="m-cell m-green-dark">1</td>
+                        <td class="m-cell m-green-dark">2</td>
+                        <td class="m-cell m-green-dark">3</td>
+                        <td class="m-cell m-green-light">4</td>
+                        <td class="m-cell m-yellow">5</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div class="matrix-legend-row">
+                    <span class="legend-chip m-green-dark">1–3: Rendah</span>
+                    <span class="legend-chip m-green-light">4: Rendah–Moderate</span>
+                    <span class="legend-chip m-yellow">5–9: Moderate</span>
+                    <span class="legend-chip m-orange">10–12: Moderate–Tinggi</span>
+                    <span class="legend-chip m-red">15–25: Tinggi / Sangat Besar</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DAFTAR KARTU LANGKAH PEKERJAAN (TAHAP 2) -->
+            <div id="hazardStepsContainer">
+              <!-- Dirender secara dinamis & interaktif oleh js/app.js -->
+            </div>
+
+            <!-- Tombol Tambah Langkah Pekerjaan Baru -->
+            <div class="add-hazard-step-bar">
+              <button type="button" class="btn-add-hazard-step" id="btnAddHazardStep">
+                + Tambah Langkah Pekerjaan Berikutnya
+              </button>
+            </div>
+
+            <!-- TOMBOL AKSI BAWAH TAHAP 2 -->
+            <div class="form-footer-actions">
+              <button type="button" class="btn-secondary-draft" id="btnBackToStep1">
+                ← Kembali ke Tahap 1
+              </button>
+              <button type="button" class="btn-primary-next" id="btnGoToStep3">
+                <span>Selanjutnya (Tahap 3: Task Hazard Assessment)</span>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- =================================================
+               TAHAP 3: TASK HAZARD ASSESSMENT (THA) — 28 KATEGORI
+               (Multiple Choice / Centang Bahaya & Pengendalian)
+               ================================================= -->
+          <div id="raStep3View" class="ra-step-view">
+
+            <!-- Banner Atas Tahap 3 (THA) -->
+            <div class="step2-top-banner">
+              <div class="step2-top-left">
+                <h3>Tahap 3 — Task Hazard Assessment (THA)</h3>
+                <p>
+                  Tabel bahaya dan pengendalian berikut membantu tim kaji risiko dalam mengelola risiko pekerjaan.
+                </p>
+              </div>
+              <div class="tha-counter-badge" id="thaSummaryCounter">
+                0 Kategori Bahaya | 0 Pengendalian Tercentang
+              </div>
+            </div>
+
+            <!-- Kotak Petunjuk Pengisian THA di Paling Atas -->
+            <div class="tha-top-instruction-box">
+              <strong>Petunjuk Pengisian Task Hazard Assessment (THA):</strong>
+              Anda <strong>tidak perlu mengisi seluruh kolom kategori</strong> di bawah ini. Cukup <strong>pilih dan centang kategori bahaya beserta langkah pengendalian yang diperlukan saja</strong> sesuai dengan tahapan dan kondisi nyata pekerjaan Anda di lapangan.
+            </div>
+
+            <!-- Bar Kontrol Pencarian & Filter THA -->
+            <div class="form-card tha-toolbar-card">
+              <div class="tha-toolbar-row">
+                <div class="input-with-icon bg-tinted tha-search-box">
+                  <input
+                    type="text"
+                    id="thaSearchInput"
+                    placeholder="Cari nama bahaya atau tindakan pengendalian (misal: Ketinggian, LOTO, Ruang Terbatas, Alat Angkat)..."
+                  />
+                </div>
+                <div class="tha-toolbar-actions">
+                  <button type="button" class="btn-edu-toggle" id="btnFilterSelectedTHA">
+                    Tampilkan Semua (28 Kategori)
+                  </button>
+                  <button type="button" class="btn-edu-toggle" id="btnResetAllTHA">
+                    Reset Pilihan THA
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grid 28 Kartu Kategori THA (Multiple Choice) -->
+            <div class="tha-categories-grid" id="thaCategoriesGrid">
+              <!-- Dirender secara dinamis oleh js/app.js dari 28 Kategori THA resmi -->
+            </div>
+
+            <!-- PANEL CETAK / DOWNLOAD EXCEL (.XLSX) & PDF (.PDF) RESMI -->
+            <div class="form-card excel-template-card">
+              <div class="section-heading-row" style="margin-bottom:10px;">
+                <div>
+                  <h2 class="section-heading">Unduh Dokumen Risk Assessment Resmi (Excel &amp; PDF 3 Halaman)</h2>
+                  <p class="section-guide-text" style="margin-bottom:0;">
+                    Pilih format unduhan yang Anda butuhkan. Seluruh data dari Tahap 1, Tahap 2 (termasuk warna matriks tingkat risiko), dan Tahap 3 (THA) akan langsung terisi otomatis.
+                  </p>
+                </div>
+              </div>
+
+              <div class="download-actions-row-2">
+                <button type="button" class="btn-download-excel" id="btnDownloadFilledExcel">
+                  <span>Download Dokumen RA (.xlsx)</span>
+                </button>
+
+                <button type="button" class="btn-download-pdf" id="btnDownloadFilledPdf">
+                  <span>Download Dokumen RA (.pdf)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- TOMBOL AKSI BAWAH TAHAP 3 -->
+            <div class="form-footer-actions">
+              <button type="button" class="btn-secondary-draft" id="btnBackToStep2">
+                ← Kembali ke Tahap 2 (Identifikasi Bahaya)
+              </button>
+              <button type="submit" class="btn-primary-next" id="btnFinishRA">
+                <span>Simpan &amp; Selesaikan Seluruh Tahap RA</span>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </button>
+            </div>
+
+          </div>
+
+        </form>
+      </section>
+
+      <!-- =====================================================
+           HALAMAN 3: STATUS DOKUMEN
+           ===================================================== -->
+      <section class="page-section" id="page-status">
+        <div class="status-header-bar">
+          <div>
+            <h1 class="page-title">Status Dokumen Risk Assessment</h1>
+            <p class="status-subtitle">Pantau posisi dokumen RA dalam alur penyusunan, pemeriksaan (RAF/Reviewer), revisi, hingga persetujuan.</p>
+          </div>
+          <button type="button" class="btn-primary-next" id="btnNewRAFromStatus">
+            <span>+ Buat RA Baru</span>
+          </button>
+        </div>
+
+        <div class="status-filter-bar" id="statusFilterBar">
+          <button type="button" class="status-filter-btn active" data-filter="ALL">Semua Dokumen</button>
+          <button type="button" class="status-filter-btn" data-filter="Draft">Draft</button>
+          <button type="button" class="status-filter-btn" data-filter="Menunggu Pemeriksaan">Menunggu Pemeriksaan</button>
+          <button type="button" class="status-filter-btn" data-filter="Perlu Revisi">Perlu Revisi</button>
+          <button type="button" class="status-filter-btn" data-filter="Disetujui">Disetujui</button>
+        </div>
+
+        <div class="form-card status-table-card">
+          <div class="table-responsive">
+            <table class="status-table">
+              <thead>
+                <tr>
+                  <th>RA No.</th>
+                  <th>Kategori &amp; Deskripsi Pekerjaan</th>
+                  <th>Site &amp; Area</th>
+                  <th>Tanggal &amp; Masa Berlaku</th>
+                  <th>Tim Kaji Risiko</th>
+                  <th>RA Reviewer</th>
+                  <th>Status Terakhir</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="statusTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="toast-notification" id="toastNotification"></div>
+
+  <!-- Library JSZip, HTML2Canvas & jsPDF (Direct 1-Click PDF Downloader) -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Pemanggilan File JavaScript Modular -->
+  <script src="js/data.js"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/excel-template-data.js"></script>
+  <script src="js/excel-generator.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
